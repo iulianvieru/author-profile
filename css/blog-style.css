@@ -1,0 +1,210 @@
+/*
+ * Blog Page Styles
+ * Combines custom blog archive styles with additional enhancements
+ * Ensures responsive layout and consistent design
+ * 
+ * Author: Clienti pe Viata
+ * Author URL: https://clientipeviata.ro
+ */
+
+/* Blog Header */
+.blog-header {
+    position: relative;
+    width: 100%;
+    height: 500px; /* Taking the larger height from extra CSS */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.blog-header-overlay {
+    background: rgba(0, 0, 0, 0.5); /* Keeping 0.5 from extra CSS */
+    padding: 30px;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 800px;
+}
+
+.blog-header h1 {
+    color: #fff;
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* Responsive Header */
+@media screen and (max-width: 992px) {
+    .blog-header {
+        height: 220px;
+    }
+
+    .blog-header-overlay {
+        width: 90%;
+    }
+
+    .blog-header h1 {
+        font-size: 28px;
+    }
+
+    .blog-container {
+        width: 95%;
+        max-width: 95%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .blog-header {
+        height: 180px;
+    }
+
+    .blog-header h1 {
+        font-size: 24px;
+    }
+}
+
+/* Blog Container */
+.blog-container {
+    width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.container:has(> .blog-header) {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+}
+
+#wrapper:has(.blog-header) .storefront-breadcrumb {
+    display: none;
+}
+
+/* Blog Grid */
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+/* Blog Items */
+.blog-grid-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.blog-grid-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Blog Image */
+.blog-grid-item .blog-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.blog-grid-item .blog-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Titles & Meta */
+.blog-grid-item .entry-title {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.blog-grid-item .entry-meta {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+/* Excerpts */
+.blog-grid-item .entry-excerpt {
+    flex-grow: 1;
+    font-size: 15px;
+    margin-bottom: 15px;
+}
+
+/* Read More Button */
+.blog-grid-item .read-more {
+    align-self: flex-start;
+    text-decoration: none;
+    color: #0073aa;
+    font-weight: bold;
+    transition: color 0.2s ease-in-out;
+}
+
+.blog-grid-item .read-more:hover {
+    color: #005f80;
+}
+
+/* Pagination */
+.pagination {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.pagination a,
+.pagination span {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    color: #0073aa;
+    text-decoration: none;
+    margin: 0 2px;
+    border-radius: 4px;
+}
+
+.pagination span.current {
+    background-color: #0073aa;
+    color: #fff;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 992px) {
+    .blog-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .blog-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .blog-grid-item .blog-image {
+        height: 180px;
+    }
+
+    .blog-grid-item {
+        border: none;
+        padding: 0;
+        border-radius: 8px;
+        background-color: transparent;
+        display: flex;
+        flex-direction: column;
+        transition: none;
+    }
+
+    .blog-grid-item:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}

@@ -1,0 +1,93 @@
+/* Main container */
+.cap-settings-container {
+    max-width: 800px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.cap-settings-container .form-table{
+    width: 100%;
+}
+.cap-settings-container .form-table th{
+    width: 75%;
+}
+.cap-settings-container .form-table td{
+    text-align: right;
+}
+.cap-settings-container input[type="submit"] {
+    background-color: #f5be01;
+    color: white;
+    border-radius: 5px;
+    padding: 10px 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-color: #f5be01;
+}
+.cap-settings-container input[type="submit"]:hover {
+    background-color: black;
+}
+/* Header */
+.cap-settings-header {
+    position: relative;
+    text-align: center;
+    background: #ffffff url('../images/admin-logo-2.webp') no-repeat 20px center;
+    background-size: 100px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.cap-settings-header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+/* Toggle switch styling */
+.cap-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.cap-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+
+.cap-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.cap-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .cap-slider {
+    background-color: #f5be01;
+}
+
+input:checked + .cap-slider:before {
+    transform: translateX(26px);
+}

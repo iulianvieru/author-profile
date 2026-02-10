@@ -1,0 +1,207 @@
+/**
+ * Author Page Styles
+ * 
+ * This file contains styles specifically for the Author Page template.
+ * It includes styling for the author profile section, social icons, 
+ * author bio, and overall page layout.
+ * 
+ * Edit with caution
+ *
+ * Author: Clienti pe Viata
+ * Author URL: https://clientipeviata.ro
+ */
+
+.author-page-container {
+    max-width: 1170px;
+    margin: 50px auto;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+/* Layout: Top Centered (Default) */
+.author-page-container.layout-top {
+    flex-direction: column;
+}
+
+.author-page-container.layout-top .author-profile-wrapper {
+    width: 100%;
+}
+
+/* Layout: Left Sidebar */
+.author-page-container.layout-left .author-profile-wrapper {
+    flex: 0 0 300px;
+    position: sticky;
+    top: 40px;
+    align-self: flex-start;
+}
+
+.author-page-container.layout-left .author-content-wrapper {
+    flex: 1;
+    min-width: 0; /* Fix flex overflow */
+}
+
+/* Layout: Right Sidebar */
+.author-page-container.layout-right {
+    flex-direction: row-reverse;
+}
+
+.author-page-container.layout-right .author-profile-wrapper {
+    flex: 0 0 300px;
+    position: sticky;
+    top: 40px;
+    align-self: flex-start;
+}
+
+.author-page-container.layout-right .author-content-wrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Author Profile Card */
+.author-profile {
+    text-align: center;
+    background: #fff; /* Optional: adds card look in sidebar */
+}
+
+/* Adjustments for Sidebars */
+.author-page-container.layout-left .author-profile,
+.author-page-container.layout-right .author-profile {
+    text-align: left;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+}
+.author-page-container.layout-left .author-profile .author-name,
+.author-page-container.layout-right .author-profile .author-name {
+    font-size: 24px;
+    margin-top: 0;
+}
+.author-page-container.layout-left .author-profile .author-social-links,
+.author-page-container.layout-right .author-profile .author-social-links {
+    justify-content: flex-start;
+}
+
+/* Image */
+.author-profile-image {
+    display: block;
+    width: 100%;
+    margin: 0 auto 15px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+.author-name {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.author-social-links {
+    margin: 15px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Safety for many icons */
+}
+.author-contact-info {
+    margin: 15px 0;
+}
+.author-contact-info p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.social-icon {
+    width: 30px;
+    height: 30px;
+    margin: 0 8px;
+    display: block;
+}
+/* SVG specific */
+.author-social-links svg {
+    width: 30px;
+    height: 30px;
+    margin: 0 8px;
+    fill: currentColor; /* Allows color overriding */
+    color: #333; /* Default color */
+    transition: color 0.3s;
+}
+.author-social-links svg:hover {
+    color: #0073aa; /* Hover color */
+}
+
+.author-bio {
+    margin-top: 15px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #555;
+    text-align: left;
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.blog-grid-item {
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+.blog-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.entry-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.entry-excerpt {
+    height: 100px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.read-more {
+    color: #0073aa;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+@media(max-width:992px) {
+    .blog-grid {
+        grid-template-columns: repeat(2,1fr);
+        gap: 20px;
+    }
+    .author-page-container {
+        flex-direction: column !important;
+    }
+    .author-profile-wrapper {
+        width: 100% !important;
+        flex: none !important;
+        position: static !important;
+    }
+    .author-profile {
+        text-align: center !important;
+    }
+    .author-social-links {
+        justify-content: center !important;
+    }
+}
+
+@media(max-width:768px) {
+    .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}

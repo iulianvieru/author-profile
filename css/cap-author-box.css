@@ -1,0 +1,94 @@
+/**
+ * Author Box Styles
+ * 
+ * This file contains styles specifically for the Author Box.
+ */
+
+.cap-author-box {
+    position: relative;
+    margin-top: 100px;
+    padding: 60px 20px 20px 20px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+    text-align: center;
+    color: #333 !important;
+}
+
+.single .entry-content .cap-author-image-container {
+    position: absolute;
+    top: -80px; 
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.single .entry-content .cap-author-box-image {
+    width: 175px;
+    height: 175px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 6px solid #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+}
+.single .entry-content .social-icon {
+    width: 30px;
+    height: 30px;
+    margin: 0 8px;
+}
+.cap-author-box-title {
+    margin-top: 30px;
+    font-size: 22px;
+    color: #333 !important;
+}
+
+.cap-author-social {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;     
+    gap: 15px;         
+    border-radius: 0;
+    box-shadow: none;     
+}
+.single .entry-content .cap-author-social img,
+.single .entry-content .cap-author-social svg {  
+    border-radius: 0;
+    box-shadow: none;    
+}
+
+.cap-author-social a {
+    margin: 0 8px;
+    text-decoration: none;
+    color: #0073aa;
+    font-weight: 600;
+}
+
+.cap-author-bio {
+    margin-top: 15px;
+    font-size: 16px;
+    color: #555;
+}
+
+.cap-author-link {
+    display: inline-block;
+    margin-top: 15px;
+    font-weight: 600;
+    color: #333;
+    text-decoration: underline;
+}
+
+@media(max-width:768px){
+    .cap-author-box {
+        padding-top: 80px;
+    }
+
+    .cap-author-image-container {
+        top: -70px;
+    }
+
+    .cap-author-box-image {
+        width: 140px;
+        height: 140px;
+    }
+}

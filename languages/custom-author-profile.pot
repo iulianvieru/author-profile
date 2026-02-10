@@ -1,0 +1,224 @@
+# Copyright (C) 2025 Clienti pe Viata
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Custom Author & Blog Templates 2.0.0\n"
+"Report-Msgid-Bugs-To: https://clientipeviata.ro\n"
+"POT-Creation-Date: 2025-11-27 12:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+
+#: includes/class-cap-admin.php
+msgid "Author Profile Settings"
+msgstr ""
+
+msgid "Author Profile"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Author Page Information"
+msgstr ""
+
+msgid "Profile Image"
+msgstr ""
+
+msgid "Change"
+msgstr ""
+
+msgid "Select"
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+msgid "Remove Image"
+msgstr ""
+
+msgid "Select profile image from Media Library."
+msgstr ""
+
+msgid "Bio"
+msgstr ""
+
+msgid "Facebook URL"
+msgstr ""
+
+msgid "Instagram URL"
+msgstr ""
+
+msgid "LinkedIn URL"
+msgstr ""
+
+msgid "Twitter/X URL"
+msgstr ""
+
+msgid "YouTube URL"
+msgstr ""
+
+msgid "TikTok URL"
+msgstr ""
+
+msgid "Custom Header Background"
+msgstr ""
+
+msgid "Desktop Background"
+msgstr ""
+
+msgid "Upload Desktop"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Mobile Background"
+msgstr ""
+
+msgid "Upload Mobile"
+msgstr ""
+
+msgid "Select image"
+msgstr ""
+
+msgid "Use this image"
+msgstr ""
+
+msgid "Settings have been reset to defaults."
+msgstr ""
+
+#: includes/class-cap-frontend.php
+msgid "Custom Blog Archive"
+msgstr ""
+
+msgid "Content provided by:"
+msgstr ""
+
+msgid "See more articles by"
+msgstr ""
+
+#: includes/class-cap-settings.php
+msgid "Add template for Blog Page"
+msgstr ""
+
+msgid "Override template for Article Page"
+msgstr ""
+
+msgid "Override template for Author Page"
+msgstr ""
+
+msgid "Add author box at end of article"
+msgstr ""
+
+msgid "Author Box Position"
+msgstr ""
+
+msgid "Bottom of Post"
+msgstr ""
+
+msgid "Top of Post"
+msgstr ""
+
+msgid "Both Top and Bottom"
+msgstr ""
+
+msgid "Manual (use shortcode)"
+msgstr ""
+
+msgid "Where to display the author box on single posts."
+msgstr ""
+
+msgid "Posts Per Page"
+msgstr ""
+
+msgid "Number of posts to display on author and blog archive pages (default: 12)."
+msgstr ""
+
+msgid "Excerpt Length (words)"
+msgstr ""
+
+msgid "Number of words in post excerpts (default: 55). Leave as 0 to use WordPress default."
+msgstr ""
+
+msgid "Colors"
+msgstr ""
+
+msgid "Link Color"
+msgstr ""
+
+msgid "Color for \"Read More\" and author links. Leave empty for theme default."
+msgstr ""
+
+msgid "Link Hover Color"
+msgstr ""
+
+msgid "Color for links on hover. Leave empty for theme default."
+msgstr ""
+
+msgid "Text Labels"
+msgstr ""
+
+msgid "Read More Button"
+msgstr ""
+
+msgid "Text for the \"Read More\" link on blog/author archives."
+msgstr ""
+
+msgid "Articles By Author"
+msgstr ""
+
+msgid "Text before author name on author page (e.g., \"Articles by\")."
+msgstr ""
+
+msgid "Content Provided By"
+msgstr ""
+
+msgid "Text in author box below articles (e.g., \"Content by:\")."
+msgstr ""
+
+msgid "More Articles Link"
+msgstr ""
+
+msgid "Text for link to author page in author box (e.g., \"See more articles by\")."
+msgstr ""
+
+msgid "Previous Page"
+msgstr ""
+
+msgid "Text for \"Previous\" pagination link."
+msgstr ""
+
+msgid "Next Page"
+msgstr ""
+
+msgid "Text for \"Next\" pagination link."
+msgstr ""
+
+msgid "Read more"
+msgstr ""
+
+msgid "Articles by"
+msgstr ""
+
+msgid "« Previous"
+msgstr ""
+
+msgid "Next »"
+msgstr ""
+
+msgid "Reset Settings"
+msgstr ""
+
+msgid "Reset all plugin settings to their default values. This cannot be undone."
+msgstr ""
+
+msgid "Reset to Defaults"
+msgstr ""
+
+msgid "Are you sure you want to reset all settings to defaults? This cannot be undone."
+msgstr ""
