@@ -15,25 +15,10 @@ $show_social = get_option('cap_author_show_social', 1);
 $show_email = get_option('cap_author_show_email', 0);
 $show_website = get_option('cap_author_show_website', 0);
 
-// Get all social media links
-$social_links = [
-    'facebook' => get_user_meta($author->ID, 'author_facebook', true),
-    'instagram' => get_user_meta($author->ID, 'author_instagram', true),
-    'linkedin' => get_user_meta($author->ID, 'author_linkedin', true),
-    'twitter' => get_user_meta($author->ID, 'author_twitter', true),
-    'youtube' => get_user_meta($author->ID, 'author_youtube', true),
-    'tiktok' => get_user_meta($author->ID, 'author_tiktok', true),
-];
-
-// Helper for SVGs
-if (!function_exists('cap_get_svg_icon')) {
-    function cap_get_svg_icon($network) {
-        $file_path = CAP_PLUGIN_DIR . 'templates/images/' . $network . '.svg';
-        if (file_exists($file_path)) {
-            return file_get_contents($file_path);
-        }
-        return false;
-    }
+// Get all social media links (centralized)
+$social_links = [];
+foreach (array_keys(CAP_Plugin::get_social_networks()) as $network) {
+    $social_links[$network] = get_user_meta($author->ID, 'author_' . $network, true);
 }
 
 // Check if profile card should be displayed
@@ -62,8 +47,8 @@ $has_profile_content = ($show_image) || ($show_social) || ($show_email && $autho
                         <?php if ($url): ?>
                             <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener noreferrer">
                                 <?php 
-                                $svg = cap_get_svg_icon($network);
-                                echo $svg ? $svg : '<img src="' . plugins_url('/images/' . $network . '.svg', __FILE__) . '" alt="' . esc_attr(ucfirst($network)) . '" class="social-icon">'; 
+                                $svg = CAP()->frontend->get_svg_icon($network);
+                                echo $svg ? $svg : '<img src="' . esc_url(CAP_PLUGIN_URL . 'templates/images/' . $network . '.svg') . '" alt="' . esc_attr(ucfirst($network)) . '" class="social-icon">'; 
                                 ?>
                             </a>
                         <?php endif; ?>
@@ -102,7 +87,7 @@ $has_profile_content = ($show_image) || ($show_social) || ($show_email && $autho
             <div class="author-bio" style="margin-bottom: 30px; text-align: left;"><?php echo do_shortcode(wpautop($bio)); ?></div>
         <?php endif; ?>
 
-        <h2><?php echo esc_html(get_option('cap_label_articles_by', 'Articole scrise de')); ?> <?php echo esc_html($author->display_name); ?>:</h2>
+        <h2><?php echo esc_html(get_option('cap_label_articles_by', __('Articles by', 'custom-author-profile'))); ?> <?php echo esc_html($author->display_name); ?>:</h2>
 
     <?php if (have_posts()) : ?>
 
@@ -125,7 +110,7 @@ $has_profile_content = ($show_image) || ($show_social) || ($show_email && $autho
                         <?php the_excerpt(); ?>
                     </div>
 
-                    <a href="<?php the_permalink(); ?>" class="read-more"><?php echo esc_html(get_option('cap_label_read_more', 'Citeste mai departe')); ?></a>
+                    <a href="<?php the_permalink(); ?>" class="read-more"><?php echo esc_html(get_option('cap_label_read_more', __('Read more', 'custom-author-profile'))); ?></a>
                 </article>
             <?php endwhile; ?>
         </div>
@@ -135,13 +120,10 @@ $has_profile_content = ($show_image) || ($show_social) || ($show_email && $autho
         </div>
 
     <?php else : ?>
-        <p>No posts found.</p>
+        <p><?php echo esc_html(get_option('cap_label_no_posts', __('No posts found.', 'custom-author-profile'))); ?></p>
     <?php endif; ?>
     </div>
 
 </div>
-
-<?php get_footer(); ?>
-
 
 <?php get_footer(); ?>

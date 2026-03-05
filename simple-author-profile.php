@@ -3,7 +3,7 @@
  * Plugin Name: Custom Author & Blog Templates
  * Plugin URI: https://clientipeviata.ro
  * Description: Adds custom author profile fields (image uploader, HTML bio editor, social links), and custom author and blog page templates.
- * Version: 2.0.1
+ * Version: 2.1.0
  * Author: Clienti pe Viata
  * Author URI: https://clientipeviata.ro
  * Text Domain: custom-author-profile
@@ -31,13 +31,19 @@ if (!defined('CAP_PLUGIN_FILE')) {
  *
  * Returns the main instance of CAP to prevent the need to use globals.
  *
- * @since  2.0.1
+ * @since  2.1.0
  * @return CAP_Plugin
  */
 function CAP() {
     require_once plugin_dir_path(__FILE__) . 'includes/class-cap-plugin.php';
     return CAP_Plugin::instance();
 }
+
+// Register activation hook
+register_activation_hook(__FILE__, function() {
+    require_once plugin_dir_path(__FILE__) . 'includes/class-cap-plugin.php';
+    CAP_Plugin::activate();
+});
 
 // Initialize the plugin
 CAP();

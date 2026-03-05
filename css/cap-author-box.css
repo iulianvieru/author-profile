@@ -53,6 +53,8 @@
 }
 .single .entry-content .cap-author-social img,
 .single .entry-content .cap-author-social svg {  
+    width: 30px;
+    height: 30px;
     border-radius: 0;
     box-shadow: none;    
 }

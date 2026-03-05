@@ -5,7 +5,7 @@ jQuery(document).ready(function($){
         $('#author_profile_image_id').val('');
         $('#author-profile-image-preview').attr('src','').hide();
         $(this).hide();
-        $('#author-profile-image-upload').text('Select Image');
+        $('#author-profile-image-upload').text(capProfile.selectLabel);
     });
 
     $('#author-profile-image-upload').click(function(e){
@@ -15,8 +15,8 @@ jQuery(document).ready(function($){
             return;
         }
         mediaUploader = wp.media.frames.file_frame = wp.media({
-            title: 'Choose Profile Image',
-            button: { text: 'Select Image' },
+            title: capProfile.chooseTitle,
+            button: { text: capProfile.selectButton },
             multiple: false
         });
 
@@ -25,7 +25,7 @@ jQuery(document).ready(function($){
             $('#author-profile-image-preview').attr('src', attachment.url).show();
             $('#author_profile_image_id').val(attachment.id);
             $('#author-profile-image-remove').show();
-            $('#author-profile-image-upload').text('Change Image');
+            $('#author-profile-image-upload').text(capProfile.changeLabel);
         });
         mediaUploader.open();
     });

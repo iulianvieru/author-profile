@@ -97,6 +97,25 @@ class CAP_Admin {
         if (in_array($hook, ['profile.php', 'user-edit.php'])) {
             wp_enqueue_media();
             wp_enqueue_script('cap-author-profile-js', CAP_PLUGIN_URL . 'js/author-profile.js', ['jquery'], CAP_VERSION, true);
+            wp_localize_script('cap-author-profile-js', 'capProfile', [
+                'chooseTitle'  => __('Choose Profile Image', 'custom-author-profile'),
+                'selectButton' => __('Select Image', 'custom-author-profile'),
+                'changeLabel'  => __('Change Image', 'custom-author-profile'),
+                'selectLabel'  => __('Select Image', 'custom-author-profile'),
+            ]);
+        }
+
+        // Meta box upload scripts on page edit screens
+        if (in_array($hook, ['post.php', 'post-new.php'])) {
+            $screen = get_current_screen();
+            if ($screen && $screen->post_type === 'page') {
+                wp_enqueue_media();
+                wp_enqueue_script('cap-meta-box-js', CAP_PLUGIN_URL . 'js/meta-box-upload.js', ['jquery'], CAP_VERSION, true);
+                wp_localize_script('cap-meta-box-js', 'capMetaBox', [
+                    'selectTitle'  => __('Select image', 'custom-author-profile'),
+                    'selectButton' => __('Use this image', 'custom-author-profile'),
+                ]);
+            }
         }
     }
     
@@ -133,30 +152,12 @@ class CAP_Admin {
                     ?>
                 </td>
             </tr>
+            <?php foreach (CAP_Plugin::get_social_networks() as $network => $label): ?>
             <tr>
-                <th><label for="author_facebook"><?php _e('Facebook URL', 'custom-author-profile'); ?></label></th>
-                <td><input type="url" name="author_facebook" id="author_facebook" value="<?php echo esc_url(get_user_meta($user->ID, 'author_facebook', true)); ?>" class="regular-text" /></td>
+                <th><label for="author_<?php echo esc_attr($network); ?>"><?php echo esc_html($label); ?></label></th>
+                <td><input type="url" name="author_<?php echo esc_attr($network); ?>" id="author_<?php echo esc_attr($network); ?>" value="<?php echo esc_url(get_user_meta($user->ID, 'author_' . $network, true)); ?>" class="regular-text" /></td>
             </tr>
-            <tr>
-                <th><label for="author_instagram"><?php _e('Instagram URL', 'custom-author-profile'); ?></label></th>
-                <td><input type="url" name="author_instagram" id="author_instagram" value="<?php echo esc_url(get_user_meta($user->ID, 'author_instagram', true)); ?>" class="regular-text" /></td>
-            </tr>
-            <tr>
-                <th><label for="author_linkedin"><?php _e('LinkedIn URL', 'custom-author-profile'); ?></label></th>
-                <td><input type="url" name="author_linkedin" id="author_linkedin" value="<?php echo esc_url(get_user_meta($user->ID, 'author_linkedin', true)); ?>" class="regular-text" /></td>
-            </tr>
-            <tr>
-                <th><label for="author_twitter"><?php _e('Twitter/X URL', 'custom-author-profile'); ?></label></th>
-                <td><input type="url" name="author_twitter" id="author_twitter" value="<?php echo esc_url(get_user_meta($user->ID, 'author_twitter', true)); ?>" class="regular-text" /></td>
-            </tr>
-            <tr>
-                <th><label for="author_youtube"><?php _e('YouTube URL', 'custom-author-profile'); ?></label></th>
-                <td><input type="url" name="author_youtube" id="author_youtube" value="<?php echo esc_url(get_user_meta($user->ID, 'author_youtube', true)); ?>" class="regular-text" /></td>
-            </tr>
-            <tr>
-                <th><label for="author_tiktok"><?php _e('TikTok URL', 'custom-author-profile'); ?></label></th>
-                <td><input type="url" name="author_tiktok" id="author_tiktok" value="<?php echo esc_url(get_user_meta($user->ID, 'author_tiktok', true)); ?>" class="regular-text" /></td>
-            </tr>
+            <?php endforeach; ?>
         </table>
         <?php
     }
@@ -176,13 +177,10 @@ class CAP_Admin {
         $fields = [
             'author_profile_image_id' => 'intval',
             'author_custom_bio' => 'wp_kses_post',
-            'author_facebook' => 'esc_url_raw',
-            'author_instagram' => 'esc_url_raw',
-            'author_linkedin' => 'esc_url_raw',
-            'author_twitter' => 'esc_url_raw',
-            'author_youtube' => 'esc_url_raw',
-            'author_tiktok' => 'esc_url_raw',
         ];
+        foreach (array_keys(CAP_Plugin::get_social_networks()) as $network) {
+            $fields['author_' . $network] = 'esc_url_raw';
+        }
         
         foreach ($fields as $field => $sanitize) {
             if (isset($_POST[$field])) {
@@ -190,12 +188,14 @@ class CAP_Admin {
             }
         }
         
-        // Update custom avatar
+        // Update or clear custom avatar
         if (!empty($_POST['author_profile_image_id'])) {
             $image_url = wp_get_attachment_url(intval($_POST['author_profile_image_id']));
             if ($image_url) {
                 update_user_meta($user_id, 'custom_avatar', esc_url($image_url));
             }
+        } else {
+            delete_user_meta($user_id, 'custom_avatar');
         }
     }
     
@@ -246,36 +246,6 @@ class CAP_Admin {
         <input type="hidden" id="cap_blog_header_image_mobile" name="cap_blog_header_image_mobile" value="<?php echo esc_attr($mobile_id); ?>" />
         <button type="button" class="button" id="cap-upload-mobile"><?php _e('Upload Mobile', 'custom-author-profile'); ?></button>
         <button type="button" class="button" id="cap-remove-mobile" style="<?php echo $mobile_url ? '' : 'display:none;'; ?>"><?php _e('Remove', 'custom-author-profile'); ?></button>
-        
-        <script>
-            jQuery(document).ready(function($){
-                function handleUpload(buttonId, previewId, inputId, removeId) {
-                    let frame;
-                    $(buttonId).on('click', function(e){
-                        e.preventDefault();
-                        if (frame) frame.open();
-                        frame = wp.media({ title: '<?php _e('Select image', 'custom-author-profile'); ?>', button: { text: '<?php _e('Use this image', 'custom-author-profile'); ?>' }, multiple: false });
-                        frame.on('select', function() {
-                            let attachment = frame.state().get('selection').first().toJSON();
-                            $(inputId).val(attachment.id);
-                            $(previewId).html('<img src="'+attachment.url+'" style="max-width:100%; border-radius:6px;" />');
-                            $(removeId).show();
-                        });
-                        frame.open();
-                    });
-                    
-                    $(removeId).on('click', function(e){
-                        e.preventDefault();
-                        $(inputId).val('');
-                        $(previewId).html('');
-                        $(this).hide();
-                    });
-                }
-                
-                handleUpload('#cap-upload-desktop', '#cap-blog-header-desktop-preview', '#cap_blog_header_image_desktop', '#cap-remove-desktop');
-                handleUpload('#cap-upload-mobile',  '#cap-blog-header-mobile-preview',  '#cap_blog_header_image_mobile',  '#cap-remove-mobile');
-            });
-        </script>
         <?php
     }
     
@@ -314,33 +284,8 @@ class CAP_Admin {
                 return;
             }
             
-            // Get all options to delete
-            $options = [
-                'cap_override_blog_template',
-                'cap_override_single_template',
-                'cap_override_author_template',
-                'cap_enable_author_box',
-                'cap_author_box_position',
-                'cap_posts_per_page',
-                'cap_excerpt_length',
-                'cap_label_read_more',
-                'cap_label_articles_by',
-                'cap_label_content_by',
-                'cap_label_more_articles',
-                'cap_label_prev',
-                'cap_label_next',
-                'cap_social_icon_color',
-                'cap_link_color',
-                'cap_link_hover_color',
-                'cap_author_page_layout',
-                'cap_author_image_size',
-                'cap_author_show_bio',
-                'cap_author_show_social',
-                'cap_author_show_email',
-                'cap_author_show_website',
-            ];
-            
-            foreach ($options as $option) {
+            // Delete all options
+            foreach (CAP_Plugin::get_option_keys() as $option) {
                 delete_option($option);
             }
             
@@ -348,7 +293,7 @@ class CAP_Admin {
                 echo '<div class="notice notice-success is-dismissible"><p>' . __('Settings have been reset to defaults.', 'custom-author-profile') . '</p></div>';
             });
             
-            wp_redirect(admin_url('admin.php?page=cap-settings'));
+            wp_safe_redirect(admin_url('admin.php?page=cap-settings'));
             exit;
         }
     }

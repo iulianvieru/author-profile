@@ -26,36 +26,68 @@ class CAP_Settings {
      * Register settings
      */
     public function register_settings() {
-        $settings = [
-            'cap_override_blog_template',
-            'cap_override_single_template',
-            'cap_override_author_template',
-            'cap_enable_author_box',
-            'cap_author_box_position',
-            'cap_posts_per_page',
-            'cap_excerpt_length',
-            'cap_label_read_more',
-            'cap_label_articles_by',
-            'cap_label_content_by',
-            'cap_label_more_articles',
-            'cap_label_prev',
-            'cap_label_next',
-            'cap_social_icon_color',
-            'cap_link_color',
-            'cap_link_hover_color',
-            // New Author Page Settings
-            'cap_author_page_layout',
-            'cap_author_image_size',
-            'cap_author_show_image',
-            'cap_author_show_bio',
-            'cap_author_show_social',
-            'cap_author_show_email',
-            'cap_author_show_website',
-        ];
-        
-        foreach ($settings as $setting) {
-            register_setting('cap_settings_group', $setting);
+        $sanitizers = self::get_sanitize_map();
+        foreach (CAP_Plugin::get_option_keys() as $setting) {
+            $callback = isset($sanitizers[$setting]) ? $sanitizers[$setting] : 'sanitize_text_field';
+            register_setting('cap_settings_group', $setting, [
+                'sanitize_callback' => $callback,
+            ]);
         }
+    }
+
+    /**
+     * Get sanitization callback map for each option
+     *
+     * @return array option_name => callable
+     */
+    private static function get_sanitize_map() {
+        return [
+            // Checkboxes (0 or 1)
+            'cap_override_blog_template'   => [__CLASS__, 'sanitize_checkbox'],
+            'cap_override_single_template' => [__CLASS__, 'sanitize_checkbox'],
+            'cap_override_author_template' => [__CLASS__, 'sanitize_checkbox'],
+            'cap_enable_author_box'        => [__CLASS__, 'sanitize_checkbox'],
+            'cap_author_show_image'        => [__CLASS__, 'sanitize_checkbox'],
+            'cap_author_show_bio'          => [__CLASS__, 'sanitize_checkbox'],
+            'cap_author_show_social'       => [__CLASS__, 'sanitize_checkbox'],
+            'cap_author_show_email'        => [__CLASS__, 'sanitize_checkbox'],
+            'cap_author_show_website'      => [__CLASS__, 'sanitize_checkbox'],
+            // Integers
+            'cap_posts_per_page'           => 'absint',
+            'cap_excerpt_length'           => 'absint',
+            'cap_author_image_size'        => 'absint',
+            // Select fields
+            'cap_author_box_position'      => [__CLASS__, 'sanitize_box_position'],
+            'cap_author_page_layout'       => [__CLASS__, 'sanitize_page_layout'],
+            // Colors
+            'cap_social_icon_color'        => 'sanitize_hex_color',
+            'cap_link_color'               => 'sanitize_hex_color',
+            'cap_link_hover_color'         => 'sanitize_hex_color',
+            // Text labels — default sanitize_text_field via fallback
+        ];
+    }
+
+    /**
+     * Sanitize checkbox value to 0 or 1
+     */
+    public static function sanitize_checkbox($value) {
+        return $value ? 1 : 0;
+    }
+
+    /**
+     * Sanitize author box position select
+     */
+    public static function sanitize_box_position($value) {
+        $allowed = ['bottom', 'top', 'both', 'manual'];
+        return in_array($value, $allowed, true) ? $value : 'bottom';
+    }
+
+    /**
+     * Sanitize author page layout select
+     */
+    public static function sanitize_page_layout($value) {
+        $allowed = ['top', 'left', 'right'];
+        return in_array($value, $allowed, true) ? $value : 'top';
     }
     
     /**
@@ -100,9 +132,7 @@ class CAP_Settings {
                             </label>
                         </td>
                     </tr>
-                    
-                    <!-- NEW: Author Page Configuration -->
-                     <tr>
+                    <tr>
                         <th scope="row"><label for="cap_author_page_layout"><?php _e('Author Page Layout', 'custom-author-profile'); ?></label></th>
                         <td>
                             <select name="cap_author_page_layout" id="cap_author_page_layout">
@@ -147,10 +177,8 @@ class CAP_Settings {
                             </fieldset>
                         </td>
                     </tr>
-                    <!-- END NEW: Author Page Configuration -->
-
                     <tr>
-                        <th scope="row"><?php _e('Add author box at end of article', 'custom-author-profile'); ?></th>
+                        <th scope="row"><?php _e('Add author box in article', 'custom-author-profile'); ?></th>
                         <td>
                             <label class="cap-switch">
                                 <input type="checkbox" name="cap_enable_author_box" value="1" <?php checked(1, get_option('cap_enable_author_box', 0)); ?>>
@@ -244,8 +272,15 @@ class CAP_Settings {
                     <tr>
                         <th scope="row"><label for="cap_label_next"><?php _e('Next Page', 'custom-author-profile'); ?></label></th>
                         <td>
-                            <input type="text" name="cap_label_next" id="cap_label_next" value="<?php echo esc_attr(get_option('cap_label_next', __('Next »', 'custom-author-profile'))); ?>" class="regular-text" />
+                            <input type="text" name="cap_label_next" id="cap_label_next" value="<?php echo esc_attr(get_option('cap_label_next', __('Next &raquo;', 'custom-author-profile'))); ?>" class="regular-text" />
                             <p class="description"><?php _e('Text for "Next" pagination link.', 'custom-author-profile'); ?></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="cap_label_no_posts"><?php _e('No Posts Message', 'custom-author-profile'); ?></label></th>
+                        <td>
+                            <input type="text" name="cap_label_no_posts" id="cap_label_no_posts" value="<?php echo esc_attr(get_option('cap_label_no_posts', __('No posts found.', 'custom-author-profile'))); ?>" class="regular-text" />
+                            <p class="description"><?php _e('Text displayed when no posts are found on archive pages.', 'custom-author-profile'); ?></p>
                         </td>
                     </tr>
                 </table>

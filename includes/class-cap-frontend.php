@@ -14,6 +14,13 @@ if (!defined('ABSPATH')) {
  * CAP_Frontend Class
  */
 class CAP_Frontend {
+
+    /**
+     * Guard flag to prevent recursive avatar filtering
+     *
+     * @var bool
+     */
+    private $is_filtering_avatar = false;
     
     /**
      * Constructor
@@ -35,6 +42,9 @@ class CAP_Frontend {
         
         // Author box
         add_filter('the_content', [$this, 'add_author_box']);
+        
+        // Shortcode
+        add_shortcode('cap_author_box', [$this, 'render_author_box_shortcode']);
         
         // Custom avatar
         add_filter('get_avatar', [$this, 'custom_user_avatar'], 10, 5);
@@ -131,7 +141,7 @@ class CAP_Frontend {
         $link_hover = get_option('cap_link_hover_color', '');
         
         if ($social_color || $link_color || $link_hover) {
-            $custom_css = '<style type="text/css">';
+            $custom_css = '';
             if ($social_color) {
                 $custom_css .= '.social-icon { filter: brightness(0) saturate(100%) !important; opacity: 0.8; } .social-icon:hover { opacity: 1; }';
             }
@@ -141,8 +151,9 @@ class CAP_Frontend {
             if ($link_hover) {
                 $custom_css .= '.read-more:hover, .cap-author-link:hover { color: ' . esc_attr($link_hover) . ' !important; }';
             }
-            $custom_css .= '</style>';
-            echo $custom_css;
+            wp_register_style('cap-custom-colors', false);
+            wp_enqueue_style('cap-custom-colors');
+            wp_add_inline_style('cap-custom-colors', $custom_css);
         }
     }
     
@@ -160,57 +171,7 @@ class CAP_Frontend {
             return $content;
         }
         
-        $author_id = get_the_author_meta('ID');
-        $image_id = get_user_meta($author_id, 'author_profile_image_id', true);
-        $profile_image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
-        
-
-        // Start creating output
-        $author_box = '<div class="cap-author-box">';
-        
-        // Profile Image
-        $author_box .= '<div class="cap-author-image-container">';
-        if ($profile_image) {
-            $author_box .= '<img class="cap-author-box-image" src="' . esc_url($profile_image) . '" alt="' . esc_attr(get_the_author()) . '">';
-        } else {
-            $author_box .= get_avatar($author_id, 175, '', esc_attr(get_the_author()));
-        }
-        $author_box .= '</div>';
-        
-        // Content
-        $author_box .= '<div class="cap-author-box-content">';
-        $author_box .= '<h3 class="cap-author-box-title">' . esc_html(get_option('cap_label_content_by', __('Content provided by:', 'custom-author-profile'))) . ' ' . esc_html(get_the_author()) . '</h3>';
-        
-        // Social icons
-        $social_links = [
-            'facebook' => get_user_meta($author_id, 'author_facebook', true),
-            'twitter' => get_user_meta($author_id, 'author_twitter', true),
-            'instagram' => get_user_meta($author_id, 'author_instagram', true),
-            'linkedin' => get_user_meta($author_id, 'author_linkedin', true),
-            'youtube' => get_user_meta($author_id, 'author_youtube', true),
-            'tiktok' => get_user_meta($author_id, 'author_tiktok', true),
-        ];
-        
-        $author_box .= '<div class="cap-author-social">';
-        foreach ($social_links as $network => $url) {
-            if ($url) {
-                $icon = $this->get_svg_icon($network);
-                $img_fallback = (!$icon) ? '<img src="' . CAP_PLUGIN_URL . 'templates/images/' . $network . '.svg" alt="' . esc_attr(ucfirst($network)) . '" class="social-icon">' : $icon;
-                
-                $author_box .= '<a href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer">';
-                $author_box .= $img_fallback;
-                $author_box .= '</a>';
-            }
-        }
-        $author_box .= '</div>';
-        
-        // More articles link
-        $author_box .= '<a href="' . esc_url(get_author_posts_url($author_id)) . '" class="cap-author-link">';
-        $author_box .= esc_html(get_option('cap_label_more_articles', __('See more articles by', 'custom-author-profile'))) . ' ' . esc_html(get_the_author()) . ' &raquo;';
-        $author_box .= '</a>';
-        
-        $author_box .= '</div>'; // .cap-author-box-content
-        $author_box .= '</div>'; // .cap-author-box
+        $author_box = $this->build_author_box();
         
         if ($position === 'top') {
             return $author_box . $content;
@@ -222,23 +183,118 @@ class CAP_Frontend {
     }
 
     /**
-     * Get SVG Icon content
+     * Build author box HTML
+     *
+     * @return string
+     */
+    public function build_author_box() {
+        $author_id = get_the_author_meta('ID');
+        $image_id = get_user_meta($author_id, 'author_profile_image_id', true);
+        $profile_image = $image_id ? wp_get_attachment_image_url($image_id, 'medium') : '';
+        
+        $output = '<div class="cap-author-box">';
+        
+        // Profile Image
+        $output .= '<div class="cap-author-image-container">';
+        if ($profile_image) {
+            $output .= '<img class="cap-author-box-image" src="' . esc_url($profile_image) . '" alt="' . esc_attr(get_the_author()) . '">';
+        } else {
+            $output .= get_avatar($author_id, 175, '', esc_attr(get_the_author()));
+        }
+        $output .= '</div>';
+        
+        // Content
+        $output .= '<div class="cap-author-box-content">';
+        $output .= '<h3 class="cap-author-box-title">' . esc_html(get_option('cap_label_content_by', __('Content provided by:', 'custom-author-profile'))) . ' ' . esc_html(get_the_author()) . '</h3>';
+        
+        // Social icons (centralized)
+        $output .= '<div class="cap-author-social">';
+        foreach (array_keys(CAP_Plugin::get_social_networks()) as $network) {
+            $url = get_user_meta($author_id, 'author_' . $network, true);
+            if ($url) {
+                $icon = $this->get_svg_icon($network);
+                if (!$icon) {
+                    $icon = '<img src="' . esc_url(CAP_PLUGIN_URL . 'templates/images/' . $network . '.svg') . '" alt="' . esc_attr(ucfirst($network)) . '" class="social-icon">';
+                }
+                $output .= '<a href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer">' . $icon . '</a>';
+            }
+        }
+        $output .= '</div>';
+        
+        // More articles link
+        $output .= '<a href="' . esc_url(get_author_posts_url($author_id)) . '" class="cap-author-link">';
+        $output .= esc_html(get_option('cap_label_more_articles', __('See more articles by', 'custom-author-profile'))) . ' ' . esc_html(get_the_author()) . ' &raquo;';
+        $output .= '</a>';
+        
+        $output .= '</div>'; // .cap-author-box-content
+        $output .= '</div>'; // .cap-author-box
+        
+        return $output;
+    }
+
+    /**
+     * Render author box shortcode
+     *
+     * Usage: [cap_author_box]
+     *
+     * @param array $atts Shortcode attributes
+     * @return string
+     */
+    public function render_author_box_shortcode($atts) {
+        if (!is_single() || get_post_type() !== 'post') {
+            return '';
+        }
+        
+        // Ensure styles are loaded
+        if (!wp_style_is('cap-author-box-styles', 'enqueued')) {
+            wp_enqueue_style('cap-author-box-styles', CAP_PLUGIN_URL . 'css/cap-author-box.css', [], CAP_VERSION);
+        }
+        
+        return $this->build_author_box();
+    }
+
+    /**
+     * Get SVG icon content (sanitized)
      * 
      * @param string $network
-     * @return string|bool
+     * @return string|false
      */
-    private function get_svg_icon($network) {
-        $file_path = CAP_PLUGIN_DIR . 'templates/images/' . $network . '.svg';
+    public function get_svg_icon($network) {
+        $file_path = CAP_PLUGIN_DIR . 'templates/images/' . sanitize_file_name($network) . '.svg';
         if (file_exists($file_path)) {
-            return file_get_contents($file_path);
+            return $this->sanitize_svg(file_get_contents($file_path));
         }
         return false;
+    }
+
+    /**
+     * Sanitize SVG content to prevent XSS
+     *
+     * @param string $svg
+     * @return string
+     */
+    private function sanitize_svg($svg) {
+        // Remove script tags
+        $svg = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $svg);
+        // Remove event handlers (on*)
+        $svg = preg_replace('/\s+on\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]*)/i', '', $svg);
+        // Remove javascript: URLs
+        $svg = preg_replace('/(href|xlink:href)\s*=\s*["\']?\s*javascript:[^"\'>\s]*/i', '', $svg);
+        // Strip width/height attributes from <svg> root so CSS controls sizing
+        $svg = preg_replace('/(<svg\b[^>]*)\s+(width|height)\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]*)/i', '$1', $svg);
+        $svg = preg_replace('/(<svg\b[^>]*)\s+(width|height)\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]*)/i', '$1', $svg);
+        return $svg;
     }
     
     /**
      * Custom user avatar
      */
     public function custom_user_avatar($avatar, $id_or_email, $size, $default, $alt) {
+        if ($this->is_filtering_avatar) {
+            return $avatar;
+        }
+        $this->is_filtering_avatar = true;
+
         $user_id = false;
         
         if (is_numeric($id_or_email)) {
@@ -255,19 +311,34 @@ class CAP_Frontend {
         if ($user_id) {
             $custom_avatar = get_user_meta($user_id, 'custom_avatar', true);
             if ($custom_avatar) {
+                $size = intval($size);
+                $this->is_filtering_avatar = false;
                 return "<img src='" . esc_url($custom_avatar) . "' width='{$size}' height='{$size}' alt='" . esc_attr($alt) . "' class='avatar avatar-{$size} photo' />";
             }
         }
         
+        $this->is_filtering_avatar = false;
         return $avatar;
     }
     
     /**
-     * Custom excerpt length
+     * Custom excerpt length — only applied on plugin templates
      */
     public function custom_excerpt_length($length) {
         $custom_length = get_option('cap_excerpt_length', 0);
-        return $custom_length > 0 ? $custom_length : $length;
+        if ($custom_length <= 0) {
+            return $length;
+        }
+        
+        // Only apply on our plugin's templates
+        if (is_author() && get_option('cap_override_author_template', 0)) {
+            return $custom_length;
+        }
+        if (is_page_template('template-blog.php') && get_option('cap_override_blog_template', 0)) {
+            return $custom_length;
+        }
+        
+        return $length;
     }
     
     /**

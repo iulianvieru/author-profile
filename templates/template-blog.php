@@ -68,7 +68,7 @@ $mobile_url  = $mobile_id  ? wp_get_attachment_url($mobile_id)  : $desktop_url; 
                     <?php the_excerpt(); ?>
                 </div>
 
-                <a href="<?php the_permalink(); ?>" class="read-more"><?php echo esc_html(get_option('cap_label_read_more', 'Citeste mai departe')); ?></a>
+                <a href="<?php the_permalink(); ?>" class="read-more"><?php echo esc_html(get_option('cap_label_read_more', __('Read more', 'custom-author-profile'))); ?></a>
             </article>
 
             <?php endwhile; ?>
@@ -78,14 +78,14 @@ $mobile_url  = $mobile_id  ? wp_get_attachment_url($mobile_id)  : $desktop_url; 
             <?php
             echo paginate_links([
                 'total' => $blog_query->max_num_pages,
-                'prev_text' => esc_html(get_option('cap_label_prev', '« Inapoi')),
-                'next_text' => esc_html(get_option('cap_label_next', 'Inainte »')),
+                'prev_text' => esc_html(get_option('cap_label_prev', __('&laquo; Previous', 'custom-author-profile'))),
+                'next_text' => esc_html(get_option('cap_label_next', __('Next &raquo;', 'custom-author-profile'))),
             ]);
             ?>
         </div>
 
     <?php else : ?>
-        <p>No posts found.</p>
+        <p><?php echo esc_html(get_option('cap_label_no_posts', __('No posts found.', 'custom-author-profile'))); ?></p>
     <?php endif; wp_reset_postdata(); ?>
 
 </div>
